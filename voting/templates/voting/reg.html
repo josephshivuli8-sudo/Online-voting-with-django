@@ -1,0 +1,139 @@
+{% extends "voting/base_auth.html" %}
+{% load static %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+
+    <div class="auth-card glass-card animate-slide">
+
+        <h2 class="text-center fw-bold mb-3">Create Account</h2>
+        <p class="text-center text-muted mb-4">Join the Voting System</p>
+
+        <form method="POST" action="{% url 'account_register' %}" id="registerForm">
+            {% csrf_token %}
+
+            <!-- FORM 1 FIELDS -->
+            {% for field in form1 %}
+            <div class="form-floating mb-3">
+                {{ field }}
+                <label>{{ field.label }}</label>
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <!-- FORM 2 FIELDS -->
+            {% for field in form2 %}
+            <div class="form-floating mb-3">
+                {{ field }}
+                <label>{{ field.label }}</label>
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <!-- PASSWORD STRENGTH METER -->
+            <div id="strengthMeter" class="strength-meter mb-3"></div>
+
+            <button class="btn btn-primary w-100 py-2 mt-2">Register</button>
+
+            <p class="text-center mt-3">
+                Already have an account? <a href="{% url 'account_login' %}">Login</a>
+            </p>
+
+        </form>
+    </div>
+</div>
+
+<style>
+/* Glassmorphism */
+.glass-card {
+    background: rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 35px;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+/* Center Wrapper */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Floating label adjustments */
+.form-floating > label {
+    color: #666;
+}
+
+/* Strength Meter */
+.strength-meter {
+    height: 6px;
+    border-radius: 5px;
+    background: #ddd;
+}
+.strength-meter.active-1 { background: red; }
+.strength-meter.active-2 { background: orange; }
+.strength-meter.active-3 { background: yellowgreen; }
+.strength-meter.active-4 { background: green; }
+
+/* Slide animation */
+.animate-slide {
+    animation: slideIn .5s ease-out;
+}
+@keyframes slideIn {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Shake on error */
+.shake {
+    animation: shakeEffect .3s;
+}
+@keyframes shakeEffect {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+</style>
+
+<script>
+// Strength Meter
+const hasNumber = /[0-9]/;
+const hasUpper  = /[A-Z]/;
+const hasSpecial = /[@$!%*?&]/;
+
+let passField = document.querySelector("input[type='password']");
+if (passField) {
+    passField.addEventListener("input", function() {
+        const val = this.value;
+        const meter = document.getElementById("strengthMeter");
+
+        let score = 0;
+        if (val.length >= 6) score++;
+        if (hasUpper.test(val)) score++;
+        if (hasNumber.test(val)) score++;
+        if (hasSpecial.test(val)) score++;
+
+        meter.className = "strength-meter";
+        if (score > 0) meter.classList.add("active-" + score);
+    });
+}
+
+// Shake on error
+{% if form1.errors or form2.errors %}
+document.getElementById("registerForm").classList.add("shake");
+{% endif %}
+</script>
+
+{% endblock %}

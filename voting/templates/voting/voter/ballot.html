@@ -1,0 +1,68 @@
+{% extends 'root.html' %}
+
+{% block content %}
+<section class="content">
+  <div class="container">
+    <h1 class="text-center mb-4"><b>Cast Your Vote</b></h1>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" id="ballotForm" action="{% url 'submit_ballot' %}">
+      {% csrf_token %}
+      {{ ballot|safe }}
+
+      <div class="text-center mt-4">
+        <button type="button" class="btn btn-secondary" id="preview">
+          <i class="fa fa-eye"></i> Preview
+        </button>
+        <button type="submit" class="btn btn-primary" name="submit_vote">
+          <i class="fa fa-check-circle"></i> Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock content %}
+
+{% block custom_js %}
+<!-- Your improved JS from previous message goes here -->
+{% endblock custom_js %}
+
+{% block modal %}
+<!-- Candidate platform modal -->
+<div class="modal fade" id="bio" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title candidate"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="plat_view"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Preview modal -->
+<div class="modal fade" id="preview_modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Vote Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="preview_body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock modal %}
+
